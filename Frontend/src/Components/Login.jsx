@@ -1,15 +1,34 @@
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "../context/AuthProvider";
 
 const Login = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { login } = useAuth();
 
-  const onSubmit = (data) => console.log(data);
+  const onSubmit = async (data) => {
+    const userInfo = {
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post("http://localhost:4001/user/login", userInfo);
+      console.log(res.data);
+      if (res.data) {
+        login(res.data);
+        alert("Login Successful");
+        closeModal();
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err);
+        alert("Error: " + err.response.data.message);
+      }
+    }
+  };
 
   useEffect(() => {
     // Ensure the modal is closed when the component unmounts
@@ -34,10 +53,9 @@ const Login = () => {
         <div className="modal-box">
           <form onSubmit={handleSubmit(onSubmit)}>
             {/* Close button */}
-            <Link to={"/"}>
             <button type="button" onClick={closeModal} className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
               ✕
-            </button> </Link>
+            </button>
             <h3 className="font-bold text-lg">Login</h3>
             <div className="mt-5 space-y-3">
               <span>Email</span>

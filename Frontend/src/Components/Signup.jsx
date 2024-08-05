@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import Login from "./Login";
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 const Signup = () => {
   const {
@@ -9,8 +10,27 @@ const Signup = () => {
     formState: { errors },
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    const userInfo = {
+      fullname: data.fullname,
+      email: data.email,
+      password: data.password,
+    };
+
+    try {
+      const res = await axios.post("http://localhost:4001/user/signup", userInfo);
+      console.log(res.data);
+      if (res.data) {
+        localStorage.setItem("UserInfo", JSON.stringify(res.data));
+        console.log("Signup Successful", res.data);
+        alert("Signup Succesfull")
+      }
+    } catch (err) {
+      if (err.response) {
+        console.log(err);
+        alert("Error: " + err.response.data.message);
+      }
+    }
   };
 
   return (
@@ -26,9 +46,9 @@ const Signup = () => {
               type="text"
               placeholder="Enter your fullname"
               className="w-full px-3 border rounded-md outline-none"
-              {...register("name", { required: true })}
+              {...register("fullname", { required: true })}
             />
-            {errors.name && <span className="text-sm text-red-500">This field is required</span>}
+            {errors.fullname && <span className="text-sm text-red-500">This field is required</span>}
           </div>
           <div className="mt-5 space-y-3">
             <label htmlFor="email" className="block">Email</label>
@@ -47,15 +67,16 @@ const Signup = () => {
               id="password"
               type="password"
               placeholder="Enter your password"
+              autoComplete="off"
               className="w-full px-3 border rounded-md outline-none"
               {...register("password", { required: true })}
             />
             {errors.password && <span className="text-sm text-red-500">This field is required</span>}
           </div>
           <div className="flex justify-between mt-4 items-center">
-            <button type="submit" className="bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-900 duration-200" onClick={() => document.getElementById("my_modal_3").showModal()}>SignUp</button>
+            <button type="submit" className="bg-pink-500 text-white rounded-md px-3 py-1 hover:bg-pink-900 duration-200">SignUp</button>
             <p className="mt-2">
-              Already registered? <Link to={"/"}> 
+              Already registered? <Link to={"/"}>
               <button type="button" className="underline text-blue-500">Login</button>
               </Link>
             </p>

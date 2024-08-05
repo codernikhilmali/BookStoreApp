@@ -20,7 +20,12 @@ const Banner = () => {
         </svg>
         <input type="text"  placeholder="Enter Email to login" />
         </label>
-        <button className="btn btn-active btn-secondary">Secondary</button>
+        
+        <button className="btn btn-active btn-secondary"
+        onClick={() => document.getElementById("my_modal_3").showModal()
+
+        }
+        >Get Started</button>
         </div>
         </div>
         <div className="order-1 md:order-2 w-full md:w-1/2">

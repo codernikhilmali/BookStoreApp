@@ -1,12 +1,26 @@
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Slider from "react-slick";
-import list from '../../public/list.json';
 import Cards from "./Cards";
+import axios from "axios";
+import { useEffect, useState } from "react";
 
 const FreeBook = () => {
-  const filterData = list.filter((data) => data.Category === "Free");
-  var settings = {
+  const [freeBooks, setFreeBooks] = useState([]);
+
+  useEffect(() => {
+    const getFreeBooks = async () => {
+      try {
+        const res = await axios.get("http://localhost:4001/book/free");
+        setFreeBooks(res.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getFreeBooks();
+  }, []);
+
+  const settings = {
     dots: true,
     infinite: false,
     speed: 500,
@@ -42,26 +56,24 @@ const FreeBook = () => {
   };
 
   return (
-    <>
-      <div className="container mx-auto md:px-20 px-4">
-        <div>
-          <h1 className="text-xl font-bold pb-2">Free Offered Courses</h1>
-          <h3>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem
-            eligendi dolor, atque eveniet corrupti recusandae eum eius
-            similique ipsam, quisquam, expedita perspiciatis consectetur quos.
-            Expedita id consectetur nesciunt magni adipisci.
-          </h3>
-        </div>
-        <div>
-          <Slider {...settings}>
-            {filterData.map((item) => (
-              <Cards key={item.id} item={item} />
-            ))}
-          </Slider>
-        </div>
+    <div className="container mx-auto md:px-20 px-4">
+      <div>
+        <h1 className="text-xl font-bold pb-2">Free Offered Courses</h1>
+        <h3>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem
+          eligendi dolor, atque eveniet corrupti recusandae eum eius
+          similique ipsam, quisquam, expedita perspiciatis consectetur quos.
+          Expedita id consectetur nesciunt magni adipisci.
+        </h3>
       </div>
-    </>
+      <div>
+        <Slider {...settings}>
+          {freeBooks.map((item) => (
+            <Cards key={item.id} item={item} />
+          ))}
+        </Slider>
+      </div>
+    </div>
   );
 };
 

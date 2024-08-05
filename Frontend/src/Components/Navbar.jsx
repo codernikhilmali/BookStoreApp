@@ -1,10 +1,14 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Login from "./Login";
+import LogOut from "./LogOut";
+import { useAuth } from "../context/AuthProvider";
 
 const Navbar = () => {
+  const { authUser } = useAuth();
   const [sticky, setSticky] = useState(false);
- 
+  const navigate = useNavigate();
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {
@@ -19,25 +23,36 @@ const Navbar = () => {
     };
   }, []);
 
+  const handleCourseClick = () => {
+    if (!authUser) {
+      const loginModal = document.getElementById("my_modal_3");
+      if (loginModal) {
+        loginModal.showModal();
+      }
+    } else {
+      navigate("/Course");
+    }
+  };
+
   const navItems = (
     <>
       <li className="text-lg">
         <Link to="/">Home</Link>
       </li>
       <li className="text-lg">
-        <Link to="/Course">Course</Link>
+        <a onClick={handleCourseClick} className="cursor-pointer">Course</a>
       </li>
       <li className="text-lg">
-      <Link to="/ContactUs">Contact</Link>
+        <Link to="/ContactUs">Contact</Link>
       </li>
       <li className="text-lg">
-      <Link to="/AboutUs">About Us</Link>
+        <Link to="/AboutUs">About Us</Link>
       </li>
     </>
   );
 
   return (
-    <div className={`navbar bg-base-100 container mx-auto md:px-20 px-4 fixed top-0 left-0 right-0 transition-all duration-300 ease-in-out z-50  ${sticky ? "shadow-md bg-base-200" : ""}`}>
+    <div className={`navbar bg-base-100 container mx-auto md:px-20 px-4 fixed top-0 left-0 right-0 transition-all duration-300 ease-in-out z-50 ${sticky ? "shadow-md bg-base-200" : ""}`}>
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -88,14 +103,17 @@ const Navbar = () => {
             </svg>
           </label>
         </div>
-        <div className="">
-          <a className="bg-pink-500 text-white px-5 py-3 rounded-md hover:bg-slate-800 duration-300 cursor-pointer"
-          onClick={()=> document.getElementById("my_modal_3").showModal()}>Login</a>
-          <Login />
-        </div>
+        {
+          authUser ? <LogOut /> :
+          <div className="">
+            <a className="bg-pink-500 text-white px-5 py-3 rounded-md hover:bg-slate-800 duration-300 cursor-pointer"
+              onClick={() => document.getElementById("my_modal_3").showModal()}>Login</a>
+            <Login />
+          </div>
+        }
       </div>
     </div>
   );
-}
+};
 
 export default Navbar;
